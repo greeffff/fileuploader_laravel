@@ -5,6 +5,9 @@
 - Php 7.0
 - PostgreSQL 12 
 ## Install
+```
+composer require avglukh/fileuploader
+```
 ###### Add to /config/app.conf in Providers section to end
 ```
 \Avglukh\Fileuploader\FileUploaderServiceProvider::class
