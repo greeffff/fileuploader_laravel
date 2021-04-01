@@ -69,25 +69,29 @@ class FileUploaderService
      */
     public function preload($request){
 
-        $files = File::get();
+        $files = File::orderBy('index','asc')->get();
 
         foreach ($files as $file){
 
-            $value[$file->index]['name'] = $file->name;
-            $value[$file->index]['type'] = $file->type;
-            $value[$file->index]['size'] = $file->size;;
-            $value[$file->index]['_editorr'] = $file->_editorr;;
-            $value[$file->index]['file'] = $file->full_path;
-            $value[$file->index]['data'] =[
-                'date' => date($file->created_at),
-                'isMain' => $file->is_main,
-                'thumbnail' => $file->full_path,
-                'url' => $file->full_path,
+            $value[$file->index] =[
+                'name'=> $file->name,
+                'type' => $file->type,
+                'size' => $file->size,
+                'file' => $file->full_path,
+                'data' => [
+                    'date' => date($file->created_at),
+                    'isMain' => $file->is_main,
+                    'thumbnail' => $file->full_path,
+                    'url' => $file->full_path,
+                    'listProps' => [
+                        'id' =>$file->id,
+                    ]
+                ],
             ];
-            $value[$file->index]['data']['listProps']['id'] = $file->id;
+
         }
 
-        return response()->json($value)->header('Content-Type','text/html; charset=UTF-8');
+        return response()->json(array_values($value))->header('Content-Type','text/html; charset=UTF-8');
 
     }
 
@@ -108,9 +112,7 @@ class FileUploaderService
             imagejpeg($im, $path);
 
             if(isset($editor->crop)){
-                $sumy = imagesy($img)-$editor->crop->height;
-                $sumx = imagesx($img)-$editor->crop->width;
-                $im = imagecrop($im, ['x' => $sumx, 'y' => $sumy, 'width' => $editor->crop->width, 'height' => $editor->crop->height]);
+                $im = imagecrop($im, ['x' => $editor->crop->left, 'y' => $editor->crop->top, 'width' => $editor->crop->width, 'height' => $editor->crop->height]);
                 imagejpeg($im, $path);
             }
         }
