@@ -4,19 +4,20 @@
 - Laravel 5.4
 - Php 7.0
 - PostgreSQL 12 
-##Install
+## Install
 ###### Add to /config/app.conf in Providers section to end
 ```
 \Avglukh\Fileuploader\FileUploaderServiceProvider::class
 ```
-######Write to terminal in project folder:
+###### Write to terminal in project folder:
 ```
 php artisan migrate
 php artisan storage:link
 ```
-##Routes
+## Routes
 ```
 route{{'fileuploader.index'}} with 'type' param of query
+
 /fileuploader?type={param}
 {param}
 - prelaod
