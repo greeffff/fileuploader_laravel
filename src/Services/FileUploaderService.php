@@ -8,7 +8,7 @@
 namespace Avglukh\Fileuploader\Services;
 
 
-use Avglukh\Fileuploader\Models\File;
+use Avglukh\Fileuploader\Models\FileuploaderFile;
 
 class FileUploaderService
 {
@@ -31,10 +31,10 @@ class FileUploaderService
         $publicPath = $file->store('public');
         $path = 'storage/' . pathinfo($publicPath)['basename'];
 
-        File::updateOrCreate([
+        FileuploaderFile::updateOrCreate([
             'name' => pathinfo($publicPath)['basename'],
             'file' => $path,
-            'index' => File::lastIndex(),
+            'index' => FileuploaderFile::lastIndex(),
             'size' => $file->getSize(),
             'type' => $mime,
         ]);
@@ -69,7 +69,8 @@ class FileUploaderService
      */
     public function preload($request){
 
-        $files = File::orderBy('index','asc')->get();
+        $value = [];
+        $files = FileuploaderFile::orderBy('index','asc')->get();
 
         foreach ($files as $file){
 
@@ -101,7 +102,7 @@ class FileUploaderService
      */
     public function resize($request){
 
-        $image = File::findOrfail($request->id);
+        $image = FileuploaderFile::findOrfail($request->id);
         $path = storage_path('/app/public/'.$image->hash_name);
         $img = $this->createImage($path);
 
@@ -117,7 +118,7 @@ class FileUploaderService
             }
         }
 
-        $file = File::getFile($request->name);
+        $file = FileuploaderFile::getFile($request->name);
         $file->save();
 
         return response()->json(['success'=>true]);
@@ -130,7 +131,7 @@ class FileUploaderService
      */
     public function rename($request){
 
-        $file = File::getFile($request->name);
+        $file = FileuploaderFile::getFile($request->name);
         $file->name = $request->title.'.'.pathinfo(storage_path($file->hash_name))['extension'];
         $file->save();
 
@@ -144,9 +145,9 @@ class FileUploaderService
      */
     public function asmain($request){
 
-        File::query()->update(['is_main'=>0]);
+        FileuploaderFile::query()->update(['is_main'=>0]);
 
-        $file = File::findOrfail($request->id);
+        $file = FileuploaderFile::findOrfail($request->id);
         $file->is_main = true;
         $file->save();
 
@@ -161,7 +162,7 @@ class FileUploaderService
     public function sort($request){
 
         $sortList = collect(json_decode($request->list));
-        $file = File::get(['id','index']);
+        $file = FileuploaderFile::get(['id','index']);
 
         $file->map(function ($value,$key) use($sortList){
             $value->index = $sortList->where('id',$value->id)->first()->index;
@@ -179,13 +180,13 @@ class FileUploaderService
      */
     public function remove($request){
 
-        $column = array_values(array_flip(File::get(['index'])->pluck('index')->toArray()));
+        $column = array_values(array_flip(FileuploaderFile::get(['index'])->pluck('index')->toArray()));
 
-        $image = File::findOrfail($request->id);
+        $image = FileuploaderFile::findOrfail($request->id);
         unlink($image->storage_path);
         $image->delete();
 
-        $files = File::all();
+        $files = FileuploaderFile::all();
         $files = $files->map(function ($value,$key) use($column){
             $value->index = $column[$key];
             $value->save();

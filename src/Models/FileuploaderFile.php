@@ -8,7 +8,7 @@ namespace Avglukh\Fileuploader\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class File extends Model
+class FileuploaderFile extends Model
 {
 
     protected $guarded = [];
@@ -24,7 +24,7 @@ class File extends Model
 
     /**
      * @param $name
-     * @return File|Model|null
+     * @return FileuploaderFile|Model|null
      */
    static public function getFile($name){
 

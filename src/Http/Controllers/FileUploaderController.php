@@ -10,7 +10,7 @@
 namespace Avglukh\Fileuploader\Http\Controllers;
 
 use App\Http\Controllers\Controller;
-use Avglukh\Fileuploader\Models\File;
+use Avglukh\Fileuploader\Models\FileuploaderFile;
 use Avglukh\Fileuploader\Services\FileUploaderService;
 use Illuminate\Http\Request;
 
